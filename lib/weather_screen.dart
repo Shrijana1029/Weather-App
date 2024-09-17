@@ -1,13 +1,55 @@
 // import 'package:flutter/cupertino.dart';
+import 'dart:convert';
 import 'dart:ui';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-
+import 'package:weather_app/secrets.dart';
 import 'additional_info_item.dart';
 import 'hourly_focused_item.dart';
 
-class WeatherScreen extends StatelessWidget {
-  const WeatherScreen({super.key});
+class WeatherScreen extends StatefulWidget {
+  const WeatherScreen({super.key,});
+
+  @override
+  State<WeatherScreen> createState() => _WeatherScreenState();
+}
+
+class _WeatherScreenState extends State<WeatherScreen> {
+  double temp=0.0;
+   @override
+  void initState() {
+     super.initState();
+    getCurrentWeather();
+  }
+
+  Future <void> getCurrentWeather() async {
+
+    try{
+      String cityName = "London";
+      //res contains all data that has been requested
+      final res = await http.get(
+        Uri.parse("https://api.openweathermap.org/data/2.5 /forecast?q=$cityName&APPID=$openWeatherApiKey"
+        ),
+      );
+      // to check if PI key is working or not
+      print(res.statusCode);
+      // print(res.body);
+
+
+      //jsonDecode decodes the json format data into dart map or list
+      final data = jsonDecode(res.body);
+      if(data['cod'] != '200'){
+        throw 'An unexpected error occurred';
+      }
+      setState(() {
+        temp = data['list'][0]['main']['temp'];
+      });
+
+    }
+    catch(e){
+      throw e.toString();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +68,7 @@ class WeatherScreen extends StatelessWidget {
           ,),
         centerTitle: true,
       ),
-          body: Padding(
+          body: temp ==0 ? const CircularProgressIndicator(): Padding(
             padding: const EdgeInsets.all(12.0),
             child:   SingleChildScrollView(
               scrollDirection: Axis.vertical,
@@ -46,14 +88,14 @@ class WeatherScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(2),
                         child: BackdropFilter(
                           filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 3.0),
-                          child: const Column(
+                          child: Column(
                             children: [
-                              SizedBox(height: 16,),
-                              Text("300°F", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold
+                            const SizedBox(height: 16,),
+                              Text("$temp K", style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold
                               ),
                               ),
-                             SizedBox(height: 16,),
-                             Icon(Icons.cloudy_snowing, size:65),
+                             const SizedBox(height: 16,),
+                             const Icon(Icons.cloudy_snowing, size:65),
                               SizedBox(height: 16,),
                               Text("Rain", style: TextStyle(fontSize: 26 ),),
                               SizedBox(height: 16,),
@@ -63,8 +105,6 @@ class WeatherScreen extends StatelessWidget {
                       ) ,
                     ),
                   ),
-
-
                   // tHIS SECOND CONTAINEr
                 const SizedBox(height: 40,),
                   const Text("Weather Forecast",
@@ -76,28 +116,60 @@ class WeatherScreen extends StatelessWidget {
                    scrollDirection: Axis.horizontal,
                    child: Row(
                       children: [
-                        HourlyFocusedItems(),
-                        HourlyFocusedItems(),
-                        HourlyFocusedItems(),
-                        HourlyFocusedItems(),
-                        HourlyFocusedItems(),
-                        HourlyFocusedItems(),
-                        HourlyFocusedItems(),
-                        HourlyFocusedItems(),
+                        HourlyFocusedItems(
+                          icon: Icons.cloudy_snowing,
+                          time: '9.0',
+                          data: '300.12',
+                        ),HourlyFocusedItems(
+                          icon: Icons.cloudy_snowing,
+                          time: '10.0',
+                          data: '300.44',
+                        ),HourlyFocusedItems(
+                          icon: Icons.cloud,
+                          time: '11.0',
+                          data: '300.76',
+                        ),HourlyFocusedItems(
+                          icon: Icons.cloud,
+                          time: '12.0',
+                          data: '300.11',
+                        ),HourlyFocusedItems(
+                          icon: Icons.cloudy_snowing,
+                          time: '13.0',
+                          data: '201',
+                        ),HourlyFocusedItems(
+                          icon: Icons.cloudy_snowing,
+                          time: '14.0',
+                          data: '201',
+                        ),
+
                       ],
                     ),
                  ),
-                  SizedBox(height: 40),
+                 const SizedBox(height: 40),
 
-                  Text("Additional Information" , style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
+                 const  Text("Additional Information" , style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
                  const  Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding:  EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        AdditionalInfoItem(),
-                        AdditionalInfoItem(),
-                        AdditionalInfoItem(),
+                        AdditionalInfoItem(
+                          icon: Icons.water_drop_rounded,
+                          data: 'Humidity',
+                          value: '91',
+                        ),
+                        AdditionalInfoItem(
+                          icon: Icons.air,
+                          data: 'Wind',
+                          value: '12',
+
+                        ),
+                        AdditionalInfoItem(
+                          data: 'Pressure',
+                          icon: Icons.beach_access_outlined,
+                          value: '22',
+
+                        ),
                       ]
                     ),
                   )

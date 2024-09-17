@@ -18,3 +18,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+//MUTABLE MEANS THE STATE CAN BE CHNAGED DURING THE RUNTIME --> STATEFUL WIDGET
+// 6 44
