@@ -21,7 +21,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
      super.initState();
     getCurrentWeather();
   }
-
+//map string dynamic because value can be retured in "tem:25.3"0
+//  like json in format so
   Future <Map<String, dynamic>> getCurrentWeather() async {
 
     try{
@@ -143,43 +144,39 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   ),
                   const SizedBox(height: 20),
                   // SMALL BOXES HARU XAH AI
-                  const SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        HourlyFocusedItems(
-                          icon: Icons.cloudy_snowing,
-                          time: '9.0',
-                          data: '300.12',
-                        ),
-                        HourlyFocusedItems(
-                          icon: Icons.cloudy_snowing,
-                          time: '10.0',
-                          data: '300.44',
-                        ),
-                        HourlyFocusedItems(
-                          icon: Icons.cloud,
-                          time: '11.0',
-                          data: '300.76',
-                        ),
-                        HourlyFocusedItems(
-                          icon: Icons.cloud,
-                          time: '12.0',
-                          data: '300.11',
-                        ),
-                        HourlyFocusedItems(
-                          icon: Icons.cloudy_snowing,
-                          time: '13.0',
-                          data: '201',
-                        ),
-                        HourlyFocusedItems(
-                          icon: Icons.cloudy_snowing,
-                          time: '14.0',
-                          data: '201',
-                        ),
-                      ],
+                  // SingleChildScrollView(
+                  //   scrollDirection: Axis.horizontal,
+                  //   child: Row(
+                  //     children: [
+                  //       for(int i=1 ; i<38 ; i++)
+                  //           HourlyFocusedItems(
+                  //             icon: data['list'][i]['weather'][0]['main'] == 'Clouds' || data['list'][i]['weather'][0]['main'] == "Rain" ? Icons.cloud : Icons.sunny,
+                  //             time:data['list'][i]["dt"].toString(),
+                  //             temperature: data['list'][i]["main"]['temp'].toString(),
+                  //           ),
+                  //     ],
+                  //   ),
+                  // ),
+                  //build a no of list but lately acc to its requirement
+                  SizedBox(
+                    height: 120,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 20,
+                        itemBuilder: (context, index){
+                        final hourlySky = data['list'][index+1]['weather'][0]['main'];
+                        final hourlyForecast =  data['list'][index+1];
+                        final hourlyTemp = hourlyForecast["main"]['temp'].toString();
+
+                        return HourlyFocusedItems(
+                            icon: hourlySky == "Clouds" || hourlySky == 'Rain' ? Icons.cloud: Icons.sunny,
+                            time: hourlyForecast["dt_txt"].toString(),
+                            temperature :hourlyTemp,
+                        );
+                        }
                     ),
                   ),
+
                   const SizedBox(height: 40),
                   const Text(
                     "Additional Information",
